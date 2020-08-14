@@ -11,9 +11,7 @@
 
 #define MAX_CLIENT 30
 #define MAX_CM 2000
-#define TRUE 1
-#define FALSE 0
-#define PORT 80
+#define MAX_I 2147483647
 
 static char *rand_string(char *str, size_t size)
 {
@@ -28,7 +26,6 @@ static char *rand_string(char *str, size_t size)
     }
     return str;
 }
-
 
 int main(int argc, char **argv) {
 
@@ -56,6 +53,7 @@ int main(int argc, char **argv) {
 
   listen(s, 5);
 
+
   int new_s;
   while (1) {
     new_s = accept(s, (struct sockaddr *) &srv, (socklen_t*) &srvlen);
@@ -70,6 +68,9 @@ int main(int argc, char **argv) {
       char cm[MAX_CM];
       recv(new_s, cm, MAX_CM, 0);
 
+      char idx[16];
+      memset(idx, 0, 16);
+
       char *resp = "HTTP/1.1 200 OK\nServer: srv\nContent-Type: video/mp2t\n\n";
       int resplen = strlen(resp);
       memcpy(cm, resp, resplen);
@@ -77,8 +78,11 @@ int main(int argc, char **argv) {
       cm[MAX_CM] = '\0';
       send(new_s, cm, MAX_CM, 0);
 
+      int i = 0;
       while (1) {
-        rand_string(cm, MAX_CM);
+        sprintf(cm, "=%010d=", i);
+        i++;
+        rand_string(cm+12, MAX_CM-12);
         send(new_s, cm, MAX_CM, 0);
       }
 
@@ -88,3 +92,4 @@ int main(int argc, char **argv) {
   }
   return 0;
 }
+
