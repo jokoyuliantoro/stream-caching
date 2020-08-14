@@ -11,7 +11,6 @@
 
 #define MAX_CLIENT 30
 #define MAX_CM 2000
-#define MAX_I 2147483647
 
 static char *rand_string(char *str, size_t size)
 {
@@ -53,7 +52,6 @@ int main(int argc, char **argv) {
 
   listen(s, 5);
 
-
   int new_s;
   while (1) {
     new_s = accept(s, (struct sockaddr *) &srv, (socklen_t*) &srvlen);
@@ -78,7 +76,7 @@ int main(int argc, char **argv) {
       cm[MAX_CM] = '\0';
       send(new_s, cm, MAX_CM, 0);
 
-      int i = 0;
+      unsigned int i = 0;
       while (1) {
         sprintf(cm, "=%010d=", i);
         i++;
